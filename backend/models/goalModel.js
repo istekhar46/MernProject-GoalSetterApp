@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const goalModel = mongoose.Schema(
+const goalSchema = mongoose.Schema(
     {
         text: {
             type: String,
@@ -12,4 +12,4 @@ const goalModel = mongoose.Schema(
     }
 )
 
-module.exports = mongoose.model('goalModel',goalModel);
+module.exports = mongoose.model('Goal',goalSchema);
