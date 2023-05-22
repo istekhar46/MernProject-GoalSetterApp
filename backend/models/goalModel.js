@@ -8,7 +8,7 @@ const goalModel = mongoose.Schema(
         }
     },
     {
-        timeStamps: true
+        timestamps: true
     }
 )
 
