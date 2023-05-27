@@ -1,12 +1,13 @@
 const asyncHandler = require('express-async-handler');
 const Goal = require('../models/goalModel');
+const User = require('../models/userModel');
 
 // @desc Get Goals
 // @rout GET /api/goals
 // @access Private
 
 const getGoals = asyncHandler(async (req, res) => {
-   const goal =  await Goal.find();
+    const goal = await Goal.find({ user: req.user.id });
     res.status(200).json(goal);
 })
 
@@ -21,7 +22,8 @@ const SetGoals = asyncHandler(async (req, res) => {
     }
 
     const goal = await Goal.create({
-        text:req.body.text 
+        text: req.body.text,
+        user: req.user.id,
     });
     res.status(200).json(goal)
 })
@@ -31,15 +33,34 @@ const SetGoals = asyncHandler(async (req, res) => {
 // @rout PUT /api/goals:id 
 // @access Private
 
+
+
 const updateGoals = asyncHandler(async (req, res) => {
 
     const goal = await Goal.findById(req.params.id)
-    if(!goal){
+    if (!goal) {
         res.status(400)
         throw new Error('Goal not found')
     }
-    const updatedGoal = await Goal.findByIdAndUpdate(req.params.id , req.body,{
-       new:true,
+
+    const user = await User.findById(req.user.id)
+
+    // check user
+
+    if (!user) {
+        res.status(401)
+        throw new Error('user not authorized')
+    }
+
+    // make sure logged in user matches the goal
+
+    if (goal.user.toString() !== req.user.id) {
+        res.status(401)
+        throw new Error('user not authorized')
+    }
+
+    const updatedGoal = await Goal.findByIdAndUpdate(req.params.id, req.body, {
+        new: true,
     })
     res.status(200).json(updatedGoal);
 })
@@ -50,15 +71,32 @@ const updateGoals = asyncHandler(async (req, res) => {
 // @access Private
 
 const deleteGoals = asyncHandler(async (req, res) => {
-   
+
     const goal = await Goal.findById(req.params.id);
-    if(!goal){
+    if (!goal) {
         res.status(400)
         throw new Error("Goal not found ")
     }
+
+    const user = await User.findById(req.user.id)
+
+    // check user
+
+    if (!user) {
+        res.status(401)
+        throw new Error('user not authorized')
+    }
+
+    // make sure logged in user matches the goal
+
+    if (goal.user.toString() !== req.user.id) {
+        res.status(401)
+        throw new Error('user not authorized')
+    }
+
     await Goal.findByIdAndRemove(req.params.id)
 
-    res.status(200).json({id: req.params.id})
+    res.status(200).json({ id: req.params.id })
 })
 
 
