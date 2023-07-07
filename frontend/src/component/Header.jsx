@@ -8,11 +8,7 @@ function Header() {
   const dispatch = useDispatch();
 
   const { user } = useSelector((state) => state.auth);
-  // const user = {
-  //   name : '',
-  //   email: '',
-  //   password:''
-  // }
+  
 
   const onLogout = () => {
     dispatch(logout());
